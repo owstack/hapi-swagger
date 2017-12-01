@@ -1158,6 +1158,7 @@ var reservedClientTags = [
   'authorizationScheme',
   'authorizations',
   'basePath',
+  'proxyPath',
   'build',
   'buildFrom1_1Spec',
   'buildFrom1_2Spec',
@@ -1217,6 +1218,7 @@ var SwaggerClient = module.exports = function (url, options) {
   this.authorizations = null;
   this.authorizationScheme = null;
   this.basePath = null;
+  this.proxyPath = null;
   this.debug = false;
   this.enableCookies = false;
   this.info = null;
@@ -1248,6 +1250,8 @@ SwaggerClient.prototype.initialize = function (url, options) {
     options = url;
     this.url = options.url;
   }
+
+  this.proxyPath = options.proxyPath;
 
   options = options || {};
   this.clientAuthorizations.add(options.authorizations);
@@ -1674,6 +1678,20 @@ SwaggerClient.prototype.setBasePath = function (basePath) {
       if(api.operations) {
         _.forEach(api.operations, function(operation) {
           operation.basePath = basePath;
+        });
+      }
+    });
+  }
+};
+
+SwaggerClient.prototype.setProxyPath = function (proxyPath) {
+  this.proxyPath = proxyPath;
+
+  if(this.apis) {
+    _.forEach(this.apis, function(api) {
+      if(api.operations) {
+        _.forEach(api.operations, function(operation) {
+          operation.proxyPath = proxyPath;
         });
       }
     });
@@ -4048,6 +4066,7 @@ var Operation = module.exports = function (parent, scheme, operationId, httpMeth
   }
   this.authorizations = args.security;
   this.basePath = parent.basePath || '/';
+  this.proxyPath = parent.proxyPath || '';
   this.clientAuthorizations = clientAuthorizations;
   this.consumes = args.consumes || parent.consumes || ['application/json'];
   this.produces = args.produces || parent.produces || ['application/json'];
@@ -4512,6 +4531,9 @@ Operation.prototype.urlify = function (args) {
   }
   var url = this.scheme + '://' + this.host;
 
+  if (this.proxyPath !== '') {
+    url += this.proxyPath;
+  }
   if (this.basePath !== '/') {
     url += this.basePath;
   }
