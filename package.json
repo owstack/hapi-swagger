@@ -1,5 +1,5 @@
 {
-  "name": "hapi-swagger",
+  "name": "@owstack/hapi-swagger",
   "description": "A swagger documentation UI generator plugin for hapi",
   "version": "9.0.2",
   "author": "Glenn Jones",
